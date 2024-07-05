@@ -1,0 +1,58 @@
+{
+    "name": "Extract URLs from Text",
+    "type": "Instant",
+    "steps": [
+        {
+            "type": "Manual",
+            "inputs": {
+                "text": {
+                    "name": "text",
+                    "type": "string",
+                    "title": "Text"
+                }
+            }
+        },
+        {
+            "type": "InitializeVariable",
+            "inputs": {
+                "name": "URLs",
+                "type": "Array",
+                "value": []
+            }
+        },
+        {
+            "type": "Compose",
+            "inputs": {
+                "expression": "split(concat(triggerBody()?['text'], ' '), ' ')"
+            }
+        },
+        {
+            "type": "FilterArray",
+            "inputs": {
+                "from": "@outputs('Compose')",
+                "where": {
+                    "and": [
+                        {
+                            "matches": [
+                                {
+                                    "item()": "^((http|https):\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/[\w]*)*\/?$"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "AppendToArrayVariable",
+            "inputs": {
+                "name": "URLs",
+                "value": "@outputs('FilterArray')"
+            }
+        },
+        {
+            "type": "Compose",
+            "inputs": "@variables('URLs')"
+        }
+    ]
+}
