@@ -163,3 +163,10 @@ This flow will automatically extract URLs from incoming emails and send the list
 
 
 substring(variables('EmailBody'), add(indexOf(variables('EmailBody'), '<a href="'), length('<a href="')), sub(indexOf(variables('EmailBody'), '" title="Own">Own</a>'), add(indexOf(variables('EmailBody'), '<a href="'), length('<a href="'))))
+
+
+
+
+substring(variables('EmailBody'), add(lastIndexOf(variables('EmailBody'), 'Own') + length('Own'), 1), indexOf(substring(variables('EmailBody'), lastIndexOf(variables('EmailBody'), 'Own')), 'a href="'))
+
+
