@@ -194,6 +194,8 @@ lastIndexOf(variables('EmailBody'), '<a href="')
 
 lastIndexOf(substring(variables('EmailBody'), outputs('Compose')?['result'] + 1), '" title="Own">Own</a>')
 lastIndexOf(substring(variables('EmailBody'), add(outputs('Compose_FindLastHref')?['result'], 9)), '" title="Own">Own</a>')
+lastIndexOf(substring(variables('EmailBody'), add(outputs('Compose_FindLastHref')?['result'], 9)), '" title="Own">Own</a>')
+
 
 
 
