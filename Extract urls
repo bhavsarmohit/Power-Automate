@@ -1,15 +1,103 @@
+Step-by-Step Guide to Create the Flow
+Log in to Power Automate:
+Go to the Power Automate portal and log in with your Microsoft account.
+
+Create a New Flow:
+
+Click on "Create" in the left-hand navigation pane.
+Choose "Automated cloud flow."
+Set the Trigger:
+
+In the "Build an automated flow" window, search for "Outlook."
+Select "When a new email arrives (V3)" from the triggers.
+Click "Create."
+Configure the Trigger:
+
+Set the parameters as needed (e.g., specify the folder, include subfolders, etc.).
+Configure any conditions (e.g., from specific senders, subject contains certain words, etc.).
+Initialize Variables:
+
+Click on "New step."
+Search for "Initialize variable" and select it.
+Set the variable name to EmailBody and type to String. Leave the value blank.
+Add another "Initialize variable" step, set the name to URLs and type to Array, and leave the value blank.
+Get Email Body:
+
+Click on "New step."
+Search for "Compose" and select it.
+In the "Inputs" field, add Body from the "When a new email arrives (V3)" trigger.
+Set Email Body Variable:
+
+Click on "New step."
+Search for "Set variable" and select it.
+Set the name to EmailBody and the value to the output of the "Compose" step.
+Extract URLs Using Regular Expression:
+
+Click on "New step."
+Search for "Compose" and select it.
+In the "Inputs" field, add the following expression to extract URLs using regex:
+expression
+Copy code
 {
-    "name": "Extract URLs from Text",
-    "type": "Instant",
+    "expression": "split(variables('EmailBody'), ' ')",
+    "inputs": "compose"
+}
+Filter Out Non-URLs:
+
+Click on "New step."
+Search for "Filter array" and select it.
+Set the "From" field to the output of the previous "Compose" step.
+In the condition, use the following expression:
+Field: item()
+Condition: matches
+Value: ^((http|https):\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/[\w]*)*\/?$
+Append URLs to Array Variable:
+
+Click on "New step."
+Search for "Append to array variable" and select it.
+Set the name to URLs.
+Set the value to the output of the "Filter array" step.
+Send Email with Extracted URLs (Optional):
+
+Click on "New step."
+Search for "Send an email (V2)" and select it.
+Configure the email parameters (To, Subject, Body).
+In the body, include the URLs variable:
+html
+Copy code
+<p>Extracted URLs:</p>
+<p>@{join(variables('URLs'), '<br>')}</p>
+Save and Test the Flow:
+
+Click on "Save."
+Test the flow by sending an email that contains URLs to the configured inbox.
+Example Flow JSON
+Here is an example JSON for the flow for easier import:
+
+json
+Copy code
+{
+    "name": "Extract URLs from Email Body",
+    "type": "Automated",
     "steps": [
         {
-            "type": "Manual",
+            "type": "Trigger",
             "inputs": {
-                "text": {
-                    "name": "text",
-                    "type": "string",
-                    "title": "Text"
+                "name": "When a new email arrives (V3)",
+                "parameters": {
+                    "Folder": "Inbox",
+                    "IncludeAttachments": false,
+                    "OnlyUnread": false,
+                    "Importance": "Any"
                 }
+            }
+        },
+        {
+            "type": "InitializeVariable",
+            "inputs": {
+                "name": "EmailBody",
+                "type": "String",
+                "value": ""
             }
         },
         {
@@ -22,9 +110,18 @@
         },
         {
             "type": "Compose",
+            "inputs": "@triggerOutputs()?['body/body']"
+        },
+        {
+            "type": "SetVariable",
             "inputs": {
-                "expression": "split(concat(triggerBody()?['text'], ' '), ' ')"
+                "name": "EmailBody",
+                "value": "@outputs('Compose')"
             }
+        },
+        {
+            "type": "Compose",
+            "inputs": "@split(variables('EmailBody'), ' ')"
         },
         {
             "type": "FilterArray",
@@ -35,7 +132,7 @@
                         {
                             "matches": [
                                 {
-                                    "item()": "^((http|https):\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/[\w]*)*\/?$"
+                                    "item()": "^((http|https):\\/\\/)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}(/[\\w]*)*\\/?$"
                                 }
                             ]
                         }
@@ -51,8 +148,13 @@
             }
         },
         {
-            "type": "Compose",
-            "inputs": "@variables('URLs')"
+            "type": "SendEmail",
+            "inputs": {
+                "To": "your-email@example.com",
+                "Subject": "Extracted URLs",
+                "Body": "<p>Extracted URLs:</p><p>@{join(variables('URLs'), '<br>')}</p>"
+            }
         }
     ]
 }
+This flow will automatically extract URLs from incoming emails and send the list of URLs to a specified email address. Make sure to adjust the "Send email" step with your own email details.
