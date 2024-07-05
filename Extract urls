@@ -205,4 +205,5 @@ substring(
     sub(outputs('Compose_LastIndexOfTitleOwn'), add(outputs('Compose_LastIndexOfHref'), 9))  // Calculate the length of substring
 )
 
+substring(variables('EmailBody'), outputs('Compose_Start')['result'], sub(outputs('Compose_End')['result'], outputs('Compose_Start')['result']))
 
