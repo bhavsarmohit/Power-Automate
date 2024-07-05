@@ -158,3 +158,8 @@ Copy code
     ]
 }
 This flow will automatically extract URLs from incoming emails and send the list of URLs to a specified email address. Make sure to adjust the "Send email" step with your own email details.
+
+
+
+
+substring(variables('EmailBody'), add(indexOf(variables('EmailBody'), '<a href="'), length('<a href="')), sub(indexOf(variables('EmailBody'), '" title="Own">Own</a>'), add(indexOf(variables('EmailBody'), '<a href="'), length('<a href="'))))
