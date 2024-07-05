@@ -188,3 +188,19 @@ substring(
 
 
 
+
+lastIndexOf(variables('EmailBody'), '<a href="')
+
+
+
+lastIndexOf(substring(variables('EmailBody'), outputs('Compose_LastIndexOfHref') + 1), '" title="Own">Own</a>')
+
+
+
+substring(
+    variables('EmailBody'),
+    add(outputs('Compose_LastIndexOfHref'), 9),  // Adjust the offset based on the length of '<a href="'
+    sub(outputs('Compose_LastIndexOfTitleOwn'), add(outputs('Compose_LastIndexOfHref'), 9))  // Calculate the length of substring
+)
+
+
