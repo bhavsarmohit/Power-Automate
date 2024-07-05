@@ -192,8 +192,7 @@ substring(
 lastIndexOf(variables('EmailBody'), '<a href="')
 
 
-
-lastIndexOf(substring(variables('EmailBody'), outputs('Compose_LastIndexOfHref') + 1), '" title="Own">Own</a>')
+lastIndexOf(substring(variables('EmailBody'), outputs('Compose')?['result'] + 1), '" title="Own">Own</a>')
 
 
 
