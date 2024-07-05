@@ -170,3 +170,21 @@ substring(variables('EmailBody'), add(indexOf(variables('EmailBody'), '<a href="
 substring(variables('EmailBody'), add(lastIndexOf(variables('EmailBody'), 'Own') + length('Own'), 1), indexOf(substring(variables('EmailBody'), lastIndexOf(variables('EmailBody'), 'Own')), 'a href="'))
 
 
+
+
+substring(
+    variables('EmailBody'),
+    add(indexOf(variables('EmailBody'), 'Own') + length('Own'), 1),
+    sub(
+        indexOf(
+            variables('EmailBody'),
+            'a href="',
+            indexOf(variables('EmailBody'), 'Own')
+        ),
+        add(indexOf(variables('EmailBody'), 'Own') + length('Own'), 1)
+    )
+)
+
+
+
+
